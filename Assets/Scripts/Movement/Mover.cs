@@ -1,27 +1,25 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using RPG.Combat;
-using Unity.VisualScripting;
-using UnityEditor;
+
+using RPG.Core;
 using UnityEngine;
 using UnityEngine.AI;
 
 namespace RPG.Movement
 {
-    public class Mover : MonoBehaviour
+    public class Mover : MonoBehaviour, IAction
     {
         private NavMeshAgent navMeshAgent;
 
+        private Health health;
         private void Awake()
         {
             navMeshAgent = GetComponent<NavMeshAgent>();
+            health = GetComponent<Health>();
+
         }
         private void Update()
         {
-
+            navMeshAgent.enabled = !health.IsDead();
             UpdateAnimator();
-
         }
 
         private void UpdateAnimator()
@@ -32,21 +30,20 @@ namespace RPG.Movement
             GetComponent<Animator>().SetFloat("forwardSpeed", speed);
         }
 
-        public void Stop()
+        public void MoveTo(Vector3 destination)
         {
-            navMeshAgent.isStopped = true;
-        }
-
-
-        public void MoveTo(Vector3 point)
-        {
-            navMeshAgent.SetDestination(point);
+            navMeshAgent.SetDestination(destination);
             navMeshAgent.isStopped = false;
         }
         public void StartMoveAction(Vector3 destination)
         {
-            GetComponent<Fighter>().CancelAttack();
+            GetComponent<ActionScheduler>().StartAction(this);
             MoveTo(destination);
+        }
+
+        public void Cancel()
+        {
+            navMeshAgent.isStopped = true;
         }
     }
 }
