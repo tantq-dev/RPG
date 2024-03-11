@@ -110,6 +110,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5597242070747470842, guid: a7cc9d348ecf0fc428da6522bd4f1a73, type: 3}
+      propertyPath: m_Speed
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 8007298867224495239, guid: a7cc9d348ecf0fc428da6522bd4f1a73, type: 3}
       propertyPath: m_Name
       value: Enemy
@@ -201,6 +205,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3de57a2cdbadbd488f73d9dd9ffc98d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  chaseDistance: 5
 --- !u!4 &8738048113804679579 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 570289470128614104, guid: a7cc9d348ecf0fc428da6522bd4f1a73, type: 3}

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using RPG.Combat;
@@ -13,19 +14,31 @@ namespace RPG.Control
     {
 
         [SerializeField] private float chaseDistance = 5f;
+        [SerializeField] private float suspicionTime = 5f;
+
+        [SerializeField] private PatrolPath patrolPath;
+        [SerializeField] private float waypointTolerance = 1f;
+        [SerializeField] private float dwellingTime = 1f;
+
+
+
         private GameObject player;
         private Fighter fighter;
         private Health health;
         private Mover mover;
 
         private Vector3 guardPosition;
+        int currentWaypointIndex = 0;
+
+        private float lastTimeSawPlayer = Mathf.Infinity;
+        private float timeSinceStartDwelling = Mathf.Infinity;
         void Awake()
         {
             player = GameObject.FindWithTag("Player");
             fighter = GetComponent<Fighter>();
             health = GetComponent<Health>();
             mover = GetComponent<Mover>();
-            guardPosition = this.transform.position;
+            guardPosition = transform.position;
 
         }
         void Update()
@@ -34,17 +47,70 @@ namespace RPG.Control
             if (InRange() && fighter.CanAttack(player))
             {
                 Attack();
+                lastTimeSawPlayer = 0;
 
+            }
+            else if (lastTimeSawPlayer < suspicionTime)
+            {
+                SuspicionsBehaviour();
             }
             else
             {
-
-                mover.StartMoveAction(guardPosition);
+                GaurdBehaviour();
 
             }
 
+            UpdateTimers();
+
+        }
+
+        private void UpdateTimers()
+        {
+            lastTimeSawPlayer += Time.deltaTime;
+            timeSinceStartDwelling += Time.deltaTime;
+        }
+
+        private void GaurdBehaviour()
+        {
+            Vector3 nextPosition = guardPosition;
+
+            if (patrolPath != null)
+            {
+                if (AtWaypoint())
+                {
+                    timeSinceStartDwelling = 0;
+                    CycleWaypoint();
+                }
+                nextPosition = GetCurrentWaypoint();
+            }
+            if (timeSinceStartDwelling > dwellingTime)
+            {
+                mover.StartMoveAction(nextPosition);
+            }
 
 
+        }
+
+        private bool AtWaypoint()
+        {
+            float distanceToWaypoint = Vector3.Distance(transform.position, GetCurrentWaypoint());
+
+            return distanceToWaypoint < waypointTolerance;
+        }
+
+        private void CycleWaypoint()
+        {
+            currentWaypointIndex = (currentWaypointIndex + 1) % patrolPath.transform.childCount;
+        }
+
+        private Vector3 GetCurrentWaypoint()
+        {
+            return patrolPath.GetWaitpoint(currentWaypointIndex);
+        }
+
+        private void SuspicionsBehaviour()
+        {
+            GetComponent<ActionScheduler>().CancelCurrentAction();
         }
 
         private bool InRange()
