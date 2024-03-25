@@ -7,7 +7,9 @@ namespace RPG.Movement
 {
     public class Mover : MonoBehaviour, IAction
     {
+        [SerializeField] private float speed = 6f;
         private NavMeshAgent navMeshAgent;
+
 
         private Health health;
         private void Awake()
@@ -30,15 +32,16 @@ namespace RPG.Movement
             GetComponent<Animator>().SetFloat("forwardSpeed", speed);
         }
 
-        public void MoveTo(Vector3 destination)
+        public void MoveTo(Vector3 destination, float moveFraction)
         {
             navMeshAgent.SetDestination(destination);
+            navMeshAgent.speed = speed * moveFraction;
             navMeshAgent.isStopped = false;
         }
-        public void StartMoveAction(Vector3 destination)
+        public void StartMoveAction(Vector3 destination, float moveFraction)
         {
             GetComponent<ActionScheduler>().StartAction(this);
-            MoveTo(destination);
+            MoveTo(destination, moveFraction);
         }
 
         public void Cancel()

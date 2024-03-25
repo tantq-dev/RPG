@@ -22,7 +22,7 @@ namespace RPG.Combat
             if (target.transform.GetComponent<Health>().IsDead()) return;
             if (!IsInRange())
             {
-                GetComponent<Mover>().MoveTo(target.position);
+                GetComponent<Mover>().MoveTo(target.position, 1f);
 
             }
             else
@@ -80,6 +80,8 @@ namespace RPG.Combat
         {
             StopAttack();
             this.target = null;
+            GetComponent<Mover>().Cancel();
+
 
         }
 

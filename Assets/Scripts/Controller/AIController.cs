@@ -19,8 +19,8 @@ namespace RPG.Control
         [SerializeField] private PatrolPath patrolPath;
         [SerializeField] private float waypointTolerance = 1f;
         [SerializeField] private float dwellingTime = 1f;
-
-
+        [Range(0, 1)]
+        [SerializeField] float patrolFraction = 0.2f;
 
         private GameObject player;
         private Fighter fighter;
@@ -85,7 +85,7 @@ namespace RPG.Control
             }
             if (timeSinceStartDwelling > dwellingTime)
             {
-                mover.StartMoveAction(nextPosition);
+                mover.StartMoveAction(nextPosition, patrolFraction);
             }
 
 
